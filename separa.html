@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Separar Valor</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 50%;
+            margin: 20px auto;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h2 style="text-align: center;">Separar Valor em Duas Colunas</h2>
+    <div style="text-align: center;">
+        <input type="text" id="inputValue" placeholder="Digite o valor (ex: 123-456)">
+        <button onclick="separarValor()">Separar</button>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Antes do -</th>
+                <th>Depois do -</th>
+            </tr>
+        </thead>
+        <tbody id="resultado">
+            <!-- Resultados serão inseridos aqui -->
+        </tbody>
+    </table>
+
+    <script>
+        function separarValor() {
+            const input = document.getElementById('inputValue').value;
+            const resultado = document.getElementById('resultado');
+            resultado.innerHTML = ''; // Limpa resultados anteriores
+
+            const partes = input.split('-');
+            if (partes.length === 2) {
+                const antes = partes[0].trim();
+                const depois = partes[1].trim();
+
+                const novaLinha = `<tr>
+                    <td>${antes}</td>
+                    <td>${depois}</td>
+                </tr>`;
+                resultado.innerHTML += novaLinha;
+            } else {
+                alert('Por favor, insira um valor no formato correto (ex: 123-456).');
+            }
+        }
+    </script>
+</body>
+</html>

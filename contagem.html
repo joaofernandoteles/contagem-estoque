@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contador de Estoque</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        input {
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+
+        table {
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .edit-button {
+            margin: 3px;
+            background-color: #ffb900;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 10%;
+            color: white;
+        }
+
+        .remove-button {
+            margin: 3px;
+            background-color: red;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            color: white;
+            border-radius: 10%;
+        }
+
+        .export-button {
+            margin-left: 10px;
+        }
+
+        .inputQtde input {
+            width: 35px;
+            height: 30px;
+        }
+
+        .inputQtde {
+            margin-left: 10px;
+        }
+
+        .inputValor input {
+            width: 210px;
+            height: 30px;
+        }
+
+        .button {
+            display: flex;
+            justify-content: center;
+        }
+
+        .button button {
+            height: 37px;
+        }
+
+        .tabela {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div style="text-align: center;">
+        <h1>Contador de Estoque</h1>
+    </div>
+    <div style="display: flex; justify-content: center;">
+        <div class="inputValor">
+            <label for="itemSeparatorInput">Insira o Sku e o Valor:</label><br>
+            <input type="text" id="itemSeparatorInput" placeholder="Código do item - Valor (ex: 123-456)" autofocus>
+        </div>
+
+        <div class="inputQtde">
+            <label for="quantityInput">Qtde:</label><br>
+            <input type="number" id="quantityInput" value="1" min="1">
+        </div>
+    </div>
+
+    <div class="button">
+        <button id="addButton">Adicionar</button>
+        <button id="exportButton" class="export-button">Excel</button>
+    </div>
+    <div class="tabela">
+        <h2>Lista de Estoque</h2>
+        <div id="tabelasContainer"></div>
+    </div>
+
+    <!-- Adicione o elemento de áudio -->
+    <audio id="notificationSound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
+
+    <script>
+        const estoque = {};
+        const notificationSound = document.getElementById('notificationSound');
+
+        document.getElementById('addButton').addEventListener('click', adicionarItem);
+        document.getElementById('exportButton').addEventListener('click', exportarParaExcel);
+
+        document.getElementById('itemSeparatorInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                adicionarItem();
+            }
+        });
+
+        function adicionarItem() {
+            const itemSeparatorInput = document.getElementById('itemSeparatorInput');
+            const quantityInput = document.getElementById('quantityInput');
+
+            const itemValue = itemSeparatorInput.value.trim();
+            const quantity = parseInt(quantityInput.value) || 1;
+
+            if (itemValue === "") {
+                alert("Por favor, insira um código de item e um valor válidos.");
+                return;
+            }
+
+            const [itemCode, separatorValue] = itemValue.split('-').map(item => item.trim());
+            if (!separatorValue) {
+                alert("Por favor, insira um valor após o hífen.");
+                return;
+            }
+
+            // Atualiza o estoque
+            if (!estoque[itemCode]) {
+                estoque[itemCode] = {};
+            }
+            if (estoque[itemCode][separatorValue]) {
+                estoque[itemCode][separatorValue] += quantity;
+            } else {
+                estoque[itemCode][separatorValue] = quantity;
+            }
+
+            // Toca o som ao adicionar item
+            notificationSound.currentTime = 0; // Reseta o tempo do som
+            notificationSound.play();
+
+            itemSeparatorInput.value = "";
+            quantityInput.value = "1";
+            itemSeparatorInput.focus();
+
+            atualizarTabelas();
+        }
+
+        function atualizarTabelas() {
+            const tabelasContainer = document.getElementById("tabelasContainer");
+            tabelasContainer.innerHTML = ""; // Limpa tabelas anteriores
+
+            for (let itemCode in estoque) {
+                const tabela = document.createElement("table");
+                const thead = document.createElement("thead");
+                const tbody = document.createElement("tbody");
+
+                thead.innerHTML = `<tr><th>Sku</th><th>Tamanho</th><th>Estoque</th><th>Ação</th></tr>`;
+                tabela.appendChild(thead);
+
+                for (let grupo in estoque[itemCode]) {
+                    const tr = document.createElement("tr");
+
+                    const tdCodigo = document.createElement("td");
+                    tdCodigo.textContent = itemCode;
+                    tr.appendChild(tdCodigo);
+
+                    const tdGrupo = document.createElement("td");
+                    tdGrupo.textContent = grupo;
+                    tr.appendChild(tdGrupo);
+
+                    const tdQuantidade = document.createElement("td");
+                    tdQuantidade.textContent = estoque[itemCode][grupo];
+                    tr.appendChild(tdQuantidade);
+
+                    const tdAção = document.createElement("td");
+
+                    const editButton = document.createElement("button");
+                    editButton.className = "edit-button";
+                    editButton.onclick = () => editarQuantidade(itemCode, grupo);
+                    editButton.innerHTML = '<i class="fas fa-pencil-alt"></i>'; // Ícone de lápis
+                    tdAção.appendChild(editButton);
+
+                    const removeButton = document.createElement("button");
+                    removeButton.className = "remove-button";
+                    removeButton.onclick = () => removerItem(itemCode, grupo);
+                    removeButton.innerHTML = '<i class="fas fa-trash-alt"></i>'; // Ícone de lixeira
+                    tdAção.appendChild(removeButton);
+
+                    tr.appendChild(tdAção);
+                    tbody.appendChild(tr);
+                }
+
+                tabela.appendChild(tbody);
+                tabelasContainer.appendChild(tabela);
+            }
+        }
+
+        function editarQuantidade(itemCode, grupo) {
+            const novaQuantidade = prompt("Insira a nova quantidade para " + itemCode + " - " + grupo + ":", estoque[itemCode][grupo]);
+            const quantidade = parseInt(novaQuantidade);
+
+            if (!isNaN(quantidade) && quantidade >= 0) {
+                estoque[itemCode][grupo] = quantidade;
+                atualizarTabelas();
+            } else {
+                alert("Por favor, insira uma quantidade válida.");
+            }
+        }
+
+        function removerItem(itemCode, grupo) {
+            delete estoque[itemCode][grupo];
+            if (Object.keys(estoque[itemCode]).length === 0) {
+                delete estoque[itemCode];
+            }
+            atualizarTabelas();
+        }
+
+        function exportarParaExcel() {
+            let csvContent = "Código do Item;Grupo;Quantidade\n";
+            for (let itemCode in estoque) {
+                for (let grupo in estoque[itemCode]) {
+                    csvContent += `${itemCode};${grupo};${estoque[itemCode][grupo]}\n`;
+                }
+            }
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'estoque.csv');
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    </script>
+</body>
+
+</html>
