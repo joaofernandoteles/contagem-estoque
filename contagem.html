@@ -87,6 +87,7 @@
         }
 
         video {
+            height: 115px;
             width: 100%;
             max-width: 400px;
             margin-top: 10px;
@@ -113,7 +114,6 @@
     <div class="button">
         <button id="addButton">Adicionar</button>
         <button id="exportButton" class="export-button">Excel</button>
-        <button id="testSoundButton">Testar Som</button>
     </div>
     <div class="button">
         <button id="scanButton">Escanear Código</button>
@@ -140,7 +140,6 @@
         document.getElementById('addButton').addEventListener('click', adicionarItem);
         document.getElementById('exportButton').addEventListener('click', exportarParaExcel);
         document.getElementById('scanButton').addEventListener('click', iniciarLeituraCodigo);
-        document.getElementById('testSoundButton').addEventListener('click', tocarSom);
 
         document.getElementById('itemSeparatorInput').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
