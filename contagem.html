@@ -272,14 +272,9 @@
         }
 
         function iniciarLeituraCodigo() {
-            if (!codeReader) {
-                codeReader = new ZXing.BrowserMultiFormatReader();
-            }
-
-            // Reseta qualquer leitura anterior
+            codeReader = new ZXing.BrowserQRCodeReader();
             codeReader.reset();
 
-            // Acessa os dispositivos de vídeo
             codeReader.listVideoInputDevices().then(videoInputDevices => {
                 // Seleciona a câmera traseira (geralmente a última)
                 selectedDeviceId = videoInputDevices[videoInputDevices.length - 1].deviceId;
