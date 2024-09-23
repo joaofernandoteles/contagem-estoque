@@ -85,6 +85,12 @@
             flex-direction: column;
             align-items: center;
         }
+
+        video {
+            width: 100%;
+            max-width: 400px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 
@@ -108,6 +114,10 @@
         <button id="addButton">Adicionar</button>
         <button id="exportButton" class="export-button">Excel</button>
     </div>
+    <div class="button">
+        <button id="scanButton">Escanear Código</button>
+    </div>
+    <video id="video" style="display:none;"></video>
     <div class="tabela">
         <h2>Lista de Estoque</h2>
         <div id="tabelasContainer"></div>
@@ -116,12 +126,17 @@
     <!-- Adicione o elemento de áudio -->
     <audio id="notificationSound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
 
+    <script src="https://unpkg.com/@zxing/library@latest"></script>
+
     <script>
         const estoque = {};
         const notificationSound = document.getElementById('notificationSound');
+        const video = document.getElementById('video');
+        let selectedDeviceId;
 
         document.getElementById('addButton').addEventListener('click', adicionarItem);
         document.getElementById('exportButton').addEventListener('click', exportarParaExcel);
+        document.getElementById('scanButton').addEventListener('click', iniciarLeituraCodigo);
 
         document.getElementById('itemSeparatorInput').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
@@ -254,6 +269,29 @@
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
+        }
+
+        function iniciarLeituraCodigo() {
+            const codeReader = new ZXing.BrowserMultiFormatReader();
+            codeReader.listVideoInputDevices()
+                .then(videoInputDevices => {
+                    selectedDeviceId = videoInputDevices[0].deviceId;
+
+                    video.style.display = 'block';
+
+                    codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
+                        if (result) {
+                            document.getElementById('itemSeparatorInput').value = result.text;
+                            adicionarItem();
+                            video.style.display = 'none';
+                            codeReader.reset();
+                        }
+                        if (err && !(err instanceof ZXing.NotFoundException)) {
+                            console.error(err);
+                        }
+                    });
+                })
+                .catch(err => console.error(err));
         }
     </script>
 </body>
