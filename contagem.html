@@ -285,8 +285,8 @@
                 codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
                     if (result) {
                         document.getElementById('itemSeparatorInput').value = result.text;
-                        adicionarItem();
-                        tocarSom(); // Toca o som a cada leitura
+                        adicionarItem(); // Adiciona o item ao estoque
+                        tocarSom(); // Toca o som ao ler o QR Code
                     }
                     if (err && !(err instanceof ZXing.NotFoundException)) {
                         console.error(err);
