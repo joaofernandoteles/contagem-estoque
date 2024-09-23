@@ -133,6 +133,7 @@
         const notificationSound = document.getElementById('notificationSound');
         const video = document.getElementById('video');
         let selectedDeviceId;
+        let codeReader;
 
         document.getElementById('addButton').addEventListener('click', adicionarItem);
         document.getElementById('exportButton').addEventListener('click', exportarParaExcel);
@@ -272,26 +273,33 @@
         }
 
         function iniciarLeituraCodigo() {
-            const codeReader = new ZXing.BrowserMultiFormatReader();
-            codeReader.listVideoInputDevices()
-                .then(videoInputDevices => {
-                    selectedDeviceId = videoInputDevices[0].deviceId;
+            if (!codeReader) {
+                codeReader = new ZXing.BrowserMultiFormatReader();
+            }
 
-                    video.style.display = 'block';
+            // Reseta qualquer leitura anterior
+            codeReader.reset();
 
-                    codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
-                        if (result) {
-                            document.getElementById('itemSeparatorInput').value = result.text;
-                            adicionarItem();
-                            video.style.display = 'none';
-                            codeReader.reset();
-                        }
-                        if (err && !(err instanceof ZXing.NotFoundException)) {
-                            console.error(err);
-                        }
-                    });
-                })
-                .catch(err => console.error(err));
+            // Acessa os dispositivos de vídeo
+            codeReader.listVideoInputDevices().then(videoInputDevices => {
+                // Seleciona a câmera traseira (geralmente a última)
+                selectedDeviceId = videoInputDevices[videoInputDevices.length - 1].deviceId;
+
+                video.style.display = 'block';
+
+                // Começa a ler códigos de barras sem parar após a primeira leitura
+                codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
+                    if (result) {
+                        document.getElementById('itemSeparatorInput').value = result.text;
+                        adicionarItem();
+                        notificationSound.play(); // Toca o som a cada leitura
+                    }
+                    if (err && !(err instanceof ZXing.NotFoundException)) {
+                        console.error(err);
+                    }
+                });
+            })
+            .catch(err => console.error(err));
         }
     </script>
 </body>
