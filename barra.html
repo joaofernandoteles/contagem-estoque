@@ -7,11 +7,37 @@
     <title>Leitor de Códigos de Barras</title>
     <script src="https://unpkg.com/@zxing/library@latest"></script>
     <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px;
+            font-family: Arial, sans-serif;
+        }
         video {
             width: 100%;
             max-width: 400px;
             height: auto;
+            display: none; /* Oculta inicialmente */
+        }
+        .progress {
+            width: 100%;
+            background-color: #f3f3f3;
+            border: 1px solid #ccc;
             margin-top: 10px;
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            background-color: #4caf50;
+            transition: width 0.5s;
+        }
+        #result {
+            margin-top: 10px;
+            font-size: 18px;
         }
     </style>
 </head>
@@ -19,31 +45,77 @@
 <body>
     <h1>Leitor de Códigos de Barras</h1>
     <button id="startButton">Iniciar Leitura</button>
-    <video id="video" style="display:none;"></video>
-    <div id="result" style="margin-top: 10px;"></div>
+    <video id="video"></video>
+    <div class="progress" id="progressBar">
+        <div class="progress-bar" id="progress"></div>
+    </div>
+    <div id="result"></div>
 
     <script>
         const video = document.getElementById('video');
+        const progressBar = document.getElementById('progress');
         const resultDiv = document.getElementById('result');
         let codeReader = new ZXing.BrowserMultiFormatReader();
 
         document.getElementById('startButton').addEventListener('click', () => {
             codeReader.listVideoInputDevices()
                 .then(videoInputDevices => {
-                    const selectedDeviceId = videoInputDevices[0].deviceId; // Seleciona a primeira câmera disponível
-                    video.style.display = 'block';
-                    return codeReader.decodeFromVideoDevice(selectedDeviceId, video, (result, err) => {
-                        if (result) {
-                            resultDiv.innerText = `Resultado: ${result.text}`;
-                            codeReader.reset(); // Para a leitura após capturar um código
-                        }
-                        if (err && !(err instanceof ZXing.NotFoundException)) {
-                            console.error(err);
-                        }
-                    });
+                    if (videoInputDevices.length > 0) {
+                        const selectedDeviceId = videoInputDevices[0].deviceId; // Seleciona a primeira câmera disponível
+                        video.style.display = 'block'; // Exibe o vídeo
+                        video.setAttribute("autoplay", "true");
+                        
+                        // Inicia a leitura do código de barras
+                        codeReader.decodeFromVideoDevice(selectedDeviceId, video, (result, err) => {
+                            if (result) {
+                                resultDiv.innerText = `Resultado: ${result.text}`;
+                                mostrarNotificacao(result.text); // Chama a função para mostrar a notificação
+                                progressBar.style.display = 'none'; // Oculta a barra de progresso
+                                codeReader.reset(); // Para a leitura após capturar um código
+                            }
+                            if (err && !(err instanceof ZXing.NotFoundException)) {
+                                console.error(err);
+                            }
+                        });
+
+                        // Inicia a animação da barra de progresso
+                        progressBar.style.display = 'block';
+                        let width = 0;
+                        const interval = setInterval(() => {
+                            if (width >= 100) {
+                                clearInterval(interval); // Para a animação quando atinge 100%
+                            } else {
+                                width++;
+                                progress.style.width = width + '%';
+                            }
+                        }, 50); // Ajuste o tempo conforme necessário
+                    } else {
+                        alert("Nenhuma câmera disponível!");
+                    }
                 })
                 .catch(err => console.error(err));
         });
+
+        function mostrarNotificacao(mensagem) {
+            const notification = document.createElement('div');
+            notification.innerText = `Código lido: ${mensagem}`;
+            notification.style.backgroundColor = '#4caf50';
+            notification.style.color = '#fff';
+            notification.style.padding = '10px';
+            notification.style.marginTop = '10px';
+            notification.style.borderRadius = '5px';
+            notification.style.position = 'absolute';
+            notification.style.top = '20px';
+            notification.style.left = '50%';
+            notification.style.transform = 'translateX(-50%)';
+            notification.style.zIndex = '1000';
+            document.body.appendChild(notification);
+
+            // Remove a notificação após 3 segundos
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 3000);
+        }
     </script>
 </body>
 
