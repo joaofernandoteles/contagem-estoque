@@ -87,9 +87,11 @@
         }
 
         video {
-            height: 115px; /* Altura fixa */
-            width: 100%; /* Largura máxima */
-            max-width: 100%; /* Permite que o vídeo ocupe a largura total do contêiner */
+            /* Altura fixa */
+            width: 100%;
+            /* Largura máxima */
+            max-width: 100%;
+            /* Permite que o vídeo ocupe a largura total do contêiner */
             margin-top: 10px;
         }
     </style>
@@ -118,7 +120,9 @@
     <div class="button">
         <button id="scanButton">Escanear Código</button>
     </div>
-    <video id="video" style="display:none;"></video>
+    <div>
+        <video id="video" style="display:none;"></video>
+    </div>
     <div class="tabela">
         <h2>Lista de Estoque</h2>
         <div id="tabelasContainer"></div>
@@ -298,7 +302,7 @@
                     }
                 });
             })
-            .catch(err => console.error(err));
+                .catch(err => console.error(err));
         }
 
         function tocarSom() {
