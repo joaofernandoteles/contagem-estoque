@@ -113,7 +113,7 @@
     <div class="button">
         <button id="addButton">Adicionar</button>
         <button id="exportButton" class="export-button">Excel</button>
-        <button id="testSoundButton">Testar Som</button> <!-- Botão para testar som -->
+        <button id="testSoundButton">Testar Som</button>
     </div>
     <div class="button">
         <button id="scanButton">Escanear Código</button>
@@ -125,7 +125,7 @@
     </div>
 
     <!-- Adicione o elemento de áudio -->
-    <audio id="notificationSound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
+    <audio id="notificationSound" src="./audio/notificacao.mp3" preload="auto"></audio> <!-- Substitua pelo seu arquivo -->
 
     <script src="https://unpkg.com/@zxing/library@latest"></script>
 
@@ -139,7 +139,7 @@
         document.getElementById('addButton').addEventListener('click', adicionarItem);
         document.getElementById('exportButton').addEventListener('click', exportarParaExcel);
         document.getElementById('scanButton').addEventListener('click', iniciarLeituraCodigo);
-        document.getElementById('testSoundButton').addEventListener('click', tocarSom); // Evento para o botão de teste
+        document.getElementById('testSoundButton').addEventListener('click', tocarSom);
 
         document.getElementById('itemSeparatorInput').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
@@ -217,13 +217,13 @@
                     const editButton = document.createElement("button");
                     editButton.className = "edit-button";
                     editButton.onclick = () => editarQuantidade(itemCode, grupo);
-                    editButton.innerHTML = '<i class="fas fa-pencil-alt"></i>'; // Ícone de lápis
+                    editButton.innerHTML = '<i class="fas fa-pencil-alt"></i>';
                     tdAção.appendChild(editButton);
 
                     const removeButton = document.createElement("button");
                     removeButton.className = "remove-button";
                     removeButton.onclick = () => removerItem(itemCode, grupo);
-                    removeButton.innerHTML = '<i class="fas fa-trash-alt"></i>'; // Ícone de lixeira
+                    removeButton.innerHTML = '<i class="fas fa-trash-alt"></i>';
                     tdAção.appendChild(removeButton);
 
                     tr.appendChild(tdAção);
@@ -278,8 +278,7 @@
             codeReader.reset();
 
             codeReader.listVideoInputDevices().then(videoInputDevices => {
-                // Seleciona a câmera traseira (geralmente a última)
-                selectedDeviceId = videoInputDevices[videoInputDevices.length - 1].deviceId;
+                selectedDeviceId = videoInputDevices[videoInputDevices.length - 1].deviceId; // Usa a câmera traseira
                 video.style.display = "block";
                 video.setAttribute("autoplay", "true");
                 codeReader.decodeFromVideoDevice(selectedDeviceId, video, (result, err) => {
