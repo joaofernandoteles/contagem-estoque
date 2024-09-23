@@ -87,9 +87,9 @@
         }
 
         video {
-            height: 115px;
-            width: 100%;
-            max-width: 400px;
+            height: 115px; /* Altura fixa */
+            width: 100%; /* Largura máxima */
+            max-width: 100%; /* Permite que o vídeo ocupe a largura total do contêiner */
             margin-top: 10px;
         }
     </style>
@@ -125,7 +125,7 @@
     </div>
 
     <!-- Adicione o elemento de áudio -->
-    <audio id="notificationSound" src="./audio/notificacao.mp3" preload="auto"></audio> <!-- Substitua pelo seu arquivo -->
+    <audio id="notificationSound" src="./audio/notificacao.mp3" preload="auto"></audio>
 
     <script src="https://unpkg.com/@zxing/library@latest"></script>
 
