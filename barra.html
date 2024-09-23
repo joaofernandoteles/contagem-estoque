@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leitor de Códigos de Barras</title>
+    <script src="https://unpkg.com/@zxing/library@latest"></script>
+    <style>
+        video {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Leitor de Códigos de Barras</h1>
+    <button id="startButton">Iniciar Leitura</button>
+    <video id="video" style="display:none;"></video>
+    <div id="result" style="margin-top: 10px;"></div>
+
+    <script>
+        const video = document.getElementById('video');
+        const resultDiv = document.getElementById('result');
+        let codeReader = new ZXing.BrowserMultiFormatReader();
+
+        document.getElementById('startButton').addEventListener('click', () => {
+            codeReader.listVideoInputDevices()
+                .then(videoInputDevices => {
+                    const selectedDeviceId = videoInputDevices[0].deviceId; // Seleciona a primeira câmera disponível
+                    video.style.display = 'block';
+                    return codeReader.decodeFromVideoDevice(selectedDeviceId, video, (result, err) => {
+                        if (result) {
+                            resultDiv.innerText = `Resultado: ${result.text}`;
+                            codeReader.reset(); // Para a leitura após capturar um código
+                        }
+                        if (err && !(err instanceof ZXing.NotFoundException)) {
+                            console.error(err);
+                        }
+                    });
+                })
+                .catch(err => console.error(err));
+        });
+    </script>
+</body>
+
+</html>
