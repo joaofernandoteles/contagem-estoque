@@ -139,7 +139,7 @@
         const video = document.getElementById('video');
         let selectedDeviceId;
         let codeReader;
-        let canPlaySound = true; // Controle do som
+        let canAddItem = true; // Controle de adição de item
 
         document.getElementById('addButton').addEventListener('click', adicionarItem);
         document.getElementById('exportButton').addEventListener('click', exportarParaExcel);
@@ -179,20 +179,22 @@
                 estoque[itemCode][separatorValue] = quantity;
             }
 
-            // Toca o som ao adicionar item
-            if (canPlaySound) {
-                tocarSom();
-                canPlaySound = false;
-                setTimeout(() => {
-                    canPlaySound = true;
-                }, 2000); // Intervalo de 2 segundos
-            }
-
             itemSeparatorInput.value = "";
             quantityInput.value = "1";
             itemSeparatorInput.focus();
 
             atualizarTabelas();
+
+            // Reseta o controle de adição
+            canAddItem = false;
+            setTimeout(() => {
+                canAddItem = true; // Permite nova adição após 1 segundo
+            }, 1000); // Intervalo de 1 segundo
+
+            // Toca o som ao adicionar item, se permitido
+            if (canAddItem) {
+                tocarSom();
+            }
         }
 
         function atualizarTabelas() {
@@ -294,8 +296,18 @@
                 codeReader.decodeFromVideoDevice(selectedDeviceId, video, (result, err) => {
                     if (result) {
                         document.getElementById('itemSeparatorInput').value = result.text;
-                        adicionarItem(); // Adiciona o item ao estoque
-                        tocarSom(); // Toca o som ao ler o QR Code
+
+                        // Adiciona o item ao estoque após 1 segundo
+                        if (canAddItem) {
+                            setTimeout(() => {
+                                adicionarItem();
+                            }, 1000); // Espera 1 segundo antes de adicionar
+                        }
+
+                        // Toca o som ao ler o QR Code, se puder
+                        if (canAddItem) {
+                            tocarSom();
+                        }
                     }
                     if (err && !(err instanceof ZXing.NotFoundException)) {
                         console.error(err);
