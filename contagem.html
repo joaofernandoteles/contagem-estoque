@@ -174,8 +174,7 @@
             }
 
             // Toca o som ao adicionar item
-            notificationSound.currentTime = 0; // Reseta o tempo do som
-            notificationSound.play();
+            tocarSom();
 
             itemSeparatorInput.value = "";
             quantityInput.value = "1";
@@ -292,7 +291,7 @@
                     if (result) {
                         document.getElementById('itemSeparatorInput').value = result.text;
                         adicionarItem();
-                        notificationSound.play(); // Toca o som a cada leitura
+                        tocarSom(); // Toca o som a cada leitura
                     }
                     if (err && !(err instanceof ZXing.NotFoundException)) {
                         console.error(err);
@@ -300,6 +299,14 @@
                 });
             })
             .catch(err => console.error(err));
+        }
+
+        function tocarSom() {
+            // Reproduz o som de notificação
+            notificationSound.currentTime = 0; // Reseta o áudio para o início
+            notificationSound.play().catch(err => {
+                console.log("Erro ao reproduzir o som: ", err);
+            });
         }
     </script>
 </body>
