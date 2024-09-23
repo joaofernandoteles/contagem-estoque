@@ -113,6 +113,7 @@
     <div class="button">
         <button id="addButton">Adicionar</button>
         <button id="exportButton" class="export-button">Excel</button>
+        <button id="testSoundButton">Testar Som</button> <!-- Botão para testar som -->
     </div>
     <div class="button">
         <button id="scanButton">Escanear Código</button>
@@ -138,6 +139,7 @@
         document.getElementById('addButton').addEventListener('click', adicionarItem);
         document.getElementById('exportButton').addEventListener('click', exportarParaExcel);
         document.getElementById('scanButton').addEventListener('click', iniciarLeituraCodigo);
+        document.getElementById('testSoundButton').addEventListener('click', tocarSom); // Evento para o botão de teste
 
         document.getElementById('itemSeparatorInput').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
@@ -278,11 +280,9 @@
             codeReader.listVideoInputDevices().then(videoInputDevices => {
                 // Seleciona a câmera traseira (geralmente a última)
                 selectedDeviceId = videoInputDevices[videoInputDevices.length - 1].deviceId;
-
-                video.style.display = 'block';
-
-                // Começa a ler códigos de barras sem parar após a primeira leitura
-                codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
+                video.style.display = "block";
+                video.setAttribute("autoplay", "true");
+                codeReader.decodeFromVideoDevice(selectedDeviceId, video, (result, err) => {
                     if (result) {
                         document.getElementById('itemSeparatorInput').value = result.text;
                         adicionarItem(); // Adiciona o item ao estoque
