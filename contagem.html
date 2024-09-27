@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contador de Estoque</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://kit.fontawesome.com/a1345e1785.js" crossorigin="anonymous"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -58,17 +59,28 @@
         }
 
         .inputQtde input {
-            width: 35px;
+            width: 30px;
             height: 30px;
+            border-radius: 50px;
+            text-align: center;
+            font-size: 18px;
+            border-color: #74c0fc;
+
         }
+
 
         .inputQtde {
-            margin-left: 10px;
+            margin-right: 5px;
         }
 
+
+
         .inputValor input {
-            width: 210px;
             height: 30px;
+            border-radius: 50px;
+            font-size: 18px;
+            padding-left: 10px;
+            border-color: #74c0fc;
         }
 
         .button {
@@ -93,6 +105,15 @@
             max-width: 100%;
             /* Permite que o vídeo ocupe a largura total do contêiner */
             margin-top: 10px;
+            margin-bottom: 25px;
+        }
+
+        #scanButton {
+            height: 45px;
+            margin-left: 5px;
+            width: 45px;
+            border-radius: 50px;
+            border-color: #74c0fc;
         }
     </style>
 </head>
@@ -101,27 +122,28 @@
     <div style="text-align: center;">
         <h1>Contador de Estoque</h1>
     </div>
+        <div>
+        <video id="video" style="display:none;"></video>
+    </div>
     <div style="display: flex; justify-content: center;">
-        <div class="inputValor">
-            <label for="itemSeparatorInput">Insira o Sku e o Valor:</label><br>
-            <input type="text" id="itemSeparatorInput" placeholder="Código do item - Valor (ex: 123-456)" autofocus>
-        </div>
 
         <div class="inputQtde">
-            <label for="quantityInput">Qtde:</label><br>
-            <input type="number" id="quantityInput" value="1" min="1">
+            <input type="number" id="quantityInput" value="1" min="1" placeholder="Qtde:">
+        </div>
+
+        <div class="inputValor">
+            <input type="text" id="itemSeparatorInput" placeholder="Insira o Sku e o Valor:" autofocus>
+        </div>
+        <div class="button">
+            <button id="scanButton">
+                <i class="fa-solid fa-camera" style="font-size: 20px; color: #74c0fc;"></i>
+            </button>
         </div>
     </div>
 
     <div class="button">
         <button id="addButton">Adicionar</button>
         <button id="exportButton" class="export-button">Excel</button>
-    </div>
-    <div class="button">
-        <button id="scanButton">Escanear Código</button>
-    </div>
-    <div>
-        <video id="video" style="display:none;"></video>
     </div>
     <div class="tabela">
         <h2>Lista de Estoque</h2>
